@@ -1,0 +1,106 @@
+﻿<Window x:Class="SudokuSolver.Windows.Main.View"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Su-done-ku!" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
+    <Window.Resources>
+        <Style TargetType="TextBox" x:Key="CellStyle"  BasedOn="{StaticResource DefaultTextBoxStyle}">
+            <Style.Setters>
+                <Setter Property="BorderBrush" Value="LightGray"></Setter>
+                <Setter Property="BorderThickness" Value="1,1,1,1"></Setter>
+            </Style.Setters>
+        </Style>
+
+        <Style TargetType="ItemsControl" x:Key="SubgridStyle">
+            <Style.Setters>
+                <Setter Property="BorderBrush" Value="Black"></Setter>
+                <Setter Property="BorderThickness" Value="1,1,1,1"></Setter>
+            </Style.Setters>
+        </Style>
+
+        <DataTemplate x:Key="Column">
+            <TextBox Text="{Binding Path=Number, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" Style="{StaticResource CellStyle}" PreviewTextInput="NumberBox_PreviewTextInput"></TextBox>
+        </DataTemplate>
+        
+        <DataTemplate x:Key="Row">
+            <ItemsControl ItemTemplate="{StaticResource Column}" ItemsSource="{Binding Path=.}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows ="{Binding Path=Count}"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SubgridColumn">
+            <ItemsControl ItemTemplate="{StaticResource Row}" ItemsSource="{Binding Path=.}" Style="{StaticResource SubgridStyle}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns ="{Binding Path=Count}"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </DataTemplate>
+
+
+        <DataTemplate x:Key="SubgridRow">
+            <ItemsControl ItemTemplate="{StaticResource SubgridColumn}" ItemsSource="{Binding Path=.}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows ="{Binding Path=Count}"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <ItemsControl ItemTemplate="{StaticResource SubgridRow}" ItemsSource="{Binding Path=ObservableGrid, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns ="{Binding Path=ObservableGrid.Count}"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+        <TextBlock Grid.Row="1" HorizontalAlignment="Center">
+            <TextBlock.Style>
+                <Style>
+                    <Setter Property="TextBlock.Foreground" Value="Red"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=ResultStatus}" Value="Unsolvable">
+                            <Setter Property="TextBlock.Text" Value="Unsolvable."></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=ResultStatus}" Value="NotEnoughNumbers">
+                            <Setter Property="TextBlock.Text" Value="Too few numbers."></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=ResultStatus}" Value="Solvable">
+                            <Setter Property="TextBlock.Text" Value="Solvable."></Setter>
+                            <Setter Property="TextBlock.Foreground" Value="Green"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Button Content="Solve" Command="{Binding Path=Solve}"></Button>
+            <Button Grid.Column="1" Content="Clear" Command="{Binding Path=Clear}"></Button>
+            <Button Grid.Column="2" Content="Resize" Command="{Binding Path=Resize}"></Button>
+        </Grid>
+    </Grid>
+</Window>
