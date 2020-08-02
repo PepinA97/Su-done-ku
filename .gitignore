@@ -4,5 +4,6 @@
 obj/
 bin/
 .vs/
+Properties/
 *.csproj
 *.user
