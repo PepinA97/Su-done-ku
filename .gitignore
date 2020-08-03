@@ -10,3 +10,5 @@ Properties/
 Sudoneku.csproj
 Sudoneku.csproj
 Sudoneku.csproj.user
+*.user
+*.csproj
